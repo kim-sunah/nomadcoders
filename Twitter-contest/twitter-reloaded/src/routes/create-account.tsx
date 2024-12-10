@@ -65,12 +65,12 @@ export default function CreateAccount() {
     e.preventDefault();
     if (isLoading || name === "" || email === "" || password === "") return;
     try {
+      setLoading(true);
       const credentials = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       );
-      console.log(credentials.user);
       await updateProfile(credentials.user, {
         displayName: name,
       });
