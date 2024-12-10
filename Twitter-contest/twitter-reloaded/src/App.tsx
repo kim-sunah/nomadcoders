@@ -8,6 +8,7 @@ import reset from "styled-reset";
 import { createGlobalStyle } from "styled-components";
 import { useEffect, useState } from "react";
 import LoadingScreen from "./components/loading-screen";
+import { auth } from "./firebase";
 
 const router = createBrowserRouter([
   {
@@ -43,6 +44,7 @@ function App() {
   const [isLoading, setLoading] = useState(true);
   const init = async () => {
     //firebase 를 기다리기
+    await auth.authStateReady();
     setLoading(false);
   };
   useEffect(() => {
