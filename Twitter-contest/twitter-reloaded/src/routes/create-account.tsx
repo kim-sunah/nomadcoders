@@ -11,6 +11,7 @@ import {
   Switcher,
   Error,
 } from "../components/auth-components";
+import GithubButton from "../components/github-button";
 
 export default function CreateAccount() {
   const [isLoading, setLoading] = useState(false);
@@ -94,6 +95,7 @@ export default function CreateAccount() {
         계정이 있으신가요?
         <Link to="/login">로그인</Link>
       </Switcher>
+      <GithubButton />
     </Wrapper>
   );
 }

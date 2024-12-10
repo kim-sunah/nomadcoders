@@ -5,6 +5,7 @@ import { FirebaseError } from "firebase/app";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 import { Error, Switcher } from "../components/auth-components";
+import GithubButton from "../components/github-button";
 
 const Wrapper = styled.div`
   height: 100%;
@@ -63,7 +64,7 @@ export default function CreateAccount() {
     if (isLoading || email === "" || password === "") return;
     try {
       setLoading(true);
-      await signInWithEmailAndPassword(auth, email, password);
+      signInWithEmailAndPassword(auth, email, password);
       navigate("/");
     } catch (e) {
       if (e instanceof FirebaseError) {
@@ -99,6 +100,7 @@ export default function CreateAccount() {
       <Switcher>
         아직 회원이 아니신가요? <Link to="/create-account">회원가입</Link>
       </Switcher>
+      <GithubButton />
     </Wrapper>
   );
 }
