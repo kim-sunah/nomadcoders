@@ -1,6 +1,7 @@
 import express from "express"
-import WebSocket from "ws";
+// import WebSocket from "ws";
 import http from "http"
+import SocketIO from "socket.io"
 
 const app = express();
 const port = 3000;
@@ -13,28 +14,41 @@ app.get("/*", (_, res) => res.render("/"))
 const Listen = () => console.log(`Listening on http://localhost:${port}`)
 
 const server = http.createServer(app)
-const wss = new WebSocket.Server({ server })
+const io = SocketIO(server);
 
-const sockets = []
-
-wss.on('connection', (socket) => {
-    sockets.push(socket);
-    socket['nickname'] = "suna";
-    console.log("connected to browser")
-    socket.on("close", () => console.log("disconnected from browser"))
-    socket.on("message", (message) => {
-        const parts = JSON.parse(message.toString());
-        switch (parts.type) {
-            case "new_message":
-                sockets.forEach(aSocket => {
-                    aSocket.send(`${socket.nickname}: ${par}`, parts.payload);
-                })
-            case "nickname":
-                socket['nickname'] = parts.payload
-
-        }
-
+io.on('connection', (socket) => {
+    socket.onAny((event) => {
+        console.log(`socket event : ${event}`)
+    })
+    socket.on('enter_room', (roomName, done) => {
+        socket.join(roomName)
+        done();
+        socket.to(roomName).emit("welcome")
     })
 })
+
+
+
+// const sockets = []
+
+// wss.on('connection', (socket) => {
+//     sockets.push(socket);
+//     socket['nickname'] = "suna";
+//     console.log("connected to browser")
+//     socket.on("close", () => console.log("disconnected from browser"))
+//     socket.on("message", (message) => {
+//         const parts = JSON.parse(message.toString());
+//         switch (parts.type) {
+//             case "new_message":
+//                 sockets.forEach(aSocket => {
+//                     aSocket.send(`${socket.nickname}: ${par}`, parts.payload);
+//                 })
+//             case "nickname":
+//                 socket['nickname'] = parts.payload
+
+//         }
+
+//     })
+// })
 
 server.listen(port, Listen)
