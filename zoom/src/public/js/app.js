@@ -3,17 +3,30 @@ const socket = io();
 const myFace = document.getElementById('myFace');
 const muteBtn = document.getElementById('mute')
 const cameraBtn = document.getElementById('camera')
+const camerasSelect = document.getElementById('cameras')
 
-let myStream;
 let muted = false;
 let cameraOff = false;
+let myStream;
 
-async function getMedia() {
+//소켓 io기능
+async function getMedia(deviceId) {
+    const initialConstrains = {
+        audio: true,
+        video: { facingMode: "user" }
+    }
+    const cameraConstraints = {
+        audio: true,
+        video: { deviceId: { exact: deviceId } },
+    }
     try {
         myStream = await navigator.mediaDevices.getUserMedia(
-            { audio: true, video: true }
+            deviceId ? cameraConstraints : initialConstrains
         )
         myFace.srcObject = myStream;
+        if (!deviceId) {
+            await getCameras();
+        }
     } catch (e) {
         console.log(e)
     }
@@ -24,6 +37,8 @@ getMedia()
 //음소거
 muteBtn.addEventListener('click', handleMuteBtnClick);
 function handleMuteBtnClick() {
+    // console.log(myStream.getAudioTracks())
+    myStream.getAudioTracks().forEach((track) => (track.enabled = !track.enabled))
     if (!muted) {
         muteBtn.innerText = "Un Mute"
         muted = true
@@ -33,10 +48,10 @@ function handleMuteBtnClick() {
     }
 }
 
-
 //카메라 on & off
 cameraBtn.addEventListener('click', handleCameraBtnClick);
 function handleCameraBtnClick() {
+    myStream.getVideoTracks().forEach((track) => (track.enabled = !track.enabled))
     if (!cameraOff) {
         cameraBtn.innerText = "Turn Camera Off"
         cameraOff = true
@@ -45,3 +60,35 @@ function handleCameraBtnClick() {
         cameraOff = false
     }
 }
+
+//장치 가져오기
+async function getCameras() {
+    try {
+        //장치 가져오기
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        //카메라만 가져오기
+        const cameras = devices.filter(device => device.kind === 'videoinput');
+        //지금 내가 사용하고있는 카메라 가져요기
+        const currentCamera = myStream.getVideoTracks()[0];
+        //카메라 옵션 가져오기
+        cameras.forEach((camera) => {
+            const option = document.createElement('option');
+            option.value = camera.deviceId;
+            option.innerText = camera.label;
+            //현재 내가 사용하고 있는 카메라 selected로 표시
+            if (currentCamera.label === camera.label) {
+                option.selected = true;
+            }
+            camerasSelect.appendChild(option);
+        });
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+camerasSelect.addEventListener('input', handleCameraChange);
+
+async function handleCameraChange() {
+    await getMedia(camerasSelect.value);
+}
+
