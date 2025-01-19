@@ -14,5 +14,14 @@ app.get("/*", (_, res) => res.render("/"))
 const server = http.createServer(app)
 const io = SocketIO(server)
 
+io.on("connection", (socket) => {
+    socket.on('join_room', (roomName, done) => {
+        socket.join(roomName)
+        done();
+        socket.to(roomName).emit("welcome")
+        // socket.broadcast.to(roomName).emit('user_connected', roomName)
+    })
+})
+
 const Listen = () => console.log(`Listening on http://localhost:${port}`)
 server.listen(port, Listen)
