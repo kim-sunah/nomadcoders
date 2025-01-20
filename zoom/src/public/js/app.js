@@ -11,6 +11,7 @@ let muted = false;
 let cameraOff = false;
 let myStream;
 let roomName;
+let myPeerConnection;
 
 call.hidden = true;
 
@@ -102,10 +103,11 @@ async function handleCameraChange() {
 //특정 룸에 접속
 const welcomeForm = welcome.querySelector('form');
 
-function startMedia() {
+async function startMedia() {
     welcome.hidden = true;
     call.hidden = false;
-    getMedia();
+    await getMedia();
+    makeConnection();
 }
 
 
@@ -124,3 +126,10 @@ function handleWelcomeSubmit(event) {
 socket.on("welcome", () => {
     console.log("someone joined")
 })
+
+//RTC 코드
+function makeConnection() {
+    //연결을 모든곳에 공유
+    myPeerConnection = new RTCPeerConnection();
+
+}
