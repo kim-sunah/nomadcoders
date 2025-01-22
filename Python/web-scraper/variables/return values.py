@@ -3,8 +3,9 @@ def tax_calc(money):
 
 def pay_tax(tax):
     print('thank you for paying', tax)
-    
+
 to_pay = tax_calc(15000000)
+pay_tax(to_pay)
 
 # ----------------------------------------------------------------
 
