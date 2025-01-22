@@ -43,6 +43,7 @@ async function getMedia(deviceId) {
 
 //음소거
 muteBtn.addEventListener('click', handleMuteBtnClick);
+
 function handleMuteBtnClick() {
     // console.log(myStream.getAudioTracks())
     myStream.getAudioTracks().forEach((track) => (track.enabled = !track.enabled))
@@ -103,33 +104,66 @@ async function handleCameraChange() {
 //특정 룸에 접속
 const welcomeForm = welcome.querySelector('form');
 
-async function startMedia() {
+async function initCall() {
     welcome.hidden = true;
     call.hidden = false;
     await getMedia();
     makeConnection();
 }
 
-
 welcome.addEventListener('submit', handleWelcomeSubmit);
 
-function handleWelcomeSubmit(event) {
+async function handleWelcomeSubmit(event) {
     event.preventDefault();
     const input = welcomeForm.querySelector('input');
-    socket.emit("join_room", input.value, startMedia);
+    await initCall();
+    socket.emit("join_room", input.value);
     roomName = input.value;
     input.value = "";
 }
 
 //socket코드
+//브라우저에서 실행 
+socket.on("welcome", async () => {
+    const offer = await myPeerConnection.createOffer();
+    myPeerConnection.setLocalDescription(offer);
+    console.log('sent the offer');
+    socket.emit("join_room", offer, roomName)
 
-socket.on("welcome", () => {
-    console.log("someone joined")
 })
-
+//firefox가 offer를 받아서 remoteDescription를 설정
+socket.on('offer', async (offer) => {
+    console.log("received offer")
+    myPeerConnection.setRemoteDescription(offer);
+    const answer = await myPeerConnection.createAnswer();
+    myPeerConnection.setLocalDescription(answer);
+    socket.emit('answer', answer, roomName);
+    console.log('sent answer answer');
+})
+socket.on('answer', async (answer) => {
+    console.log('received answer')
+    myPeerConnection.setRemoteDescription(answer);
+})
+socket.on('ice', async (ice) => {
+    console.log('received candidate')
+    myPeerConnection.addIceCandidate(ice);
+})
 //RTC 코드
 function makeConnection() {
     //연결을 모든곳에 공유
     myPeerConnection = new RTCPeerConnection();
+    myPeerConnection.addEventListener('icecandidate', handleIce);
+    myPeerConnection.addEventListener("addStream", handleAddStream);
+    myStream
+        .getTracks()
+        .forEach((track) => myPeerConnection.addTrack(track, myStream));
+}
+function handleIce(data) {
+    console.log('sent candidate')
+    socket.emit('ice', data.candidate, roomName);
+}
 
+function handleAddStream(data) {
+    const peerFace = document.getElementById('peerFace');
+    peerFace.srcObject = data.stream;
 }
