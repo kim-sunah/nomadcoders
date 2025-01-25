@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
+  <display-name>PstmProject</display-name>
+  <welcome-file-list>
+  <welcome-file>pstm_mainpage.jsp</welcome-file>
+  </welcome-file-list>
+  
+  <servlet>
+		<servlet-name>loginController</servlet-name>
+		<servlet-class>com.codachaya.controller.LoginServlet</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>loginController</servlet-name>
+		<url-pattern>/Login.do</url-pattern>
+	</servlet-mapping>
+  
+  
+  <servlet>
+  	<servlet-name>paying</servlet-name>
+  	<servlet-class>com.codachaya.controller.PayingServlet</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+  	<servlet-name>paying</servlet-name>
+  	<url-pattern>/paying.do</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+  	<servlet-name>signUp</servlet-name>
+  	<servlet-class>com.codachaya.controller.SingUpServlet</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+  	<servlet-name>signUp</servlet-name>
+  	<url-pattern>/signup.do</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+  	<servlet-name>TrainerMyPage</servlet-name>
+  	<servlet-class>com.codachaya.controller.TrainerPageServlet</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+  	<servlet-name>TrainerMyPage</servlet-name>
+  	<url-pattern>/yana.do</url-pattern>
+  </servlet-mapping>
+  
+
+  
+</web-app>

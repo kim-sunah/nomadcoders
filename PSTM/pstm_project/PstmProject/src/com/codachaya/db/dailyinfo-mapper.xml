@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="dailyinfomapper">
+  
+  <resultMap type="DailyinfoDto" id="DailyinfoDto">
+  
+    <result property="dailyinfoid" column="DAILYINFOID"/>
+  	<result property="userid" column="USERID"/>
+  	<result property="regdate" column="REGDATE"/>
+  	<result property="exercise" column="EXERCISE"/>
+  	<result property="consumekcal" column="CONSUMEKCAL"/>
+  	<result property="feedback" column="FEEDBACK"/>
+  	
+  </resultMap>
+  
+   
+  <select id="selectList" resultMap="DailyinfoDto">
+  	SELECT DAILYINFOID, USERID, REGDATE, EXERCISE, CONSUMEKCAL, FEEDBACK
+  	FROM PSTM_DAILYINFO
+  	ORDER BY DAILYINFOID DESC
+  </select>
+ 
+ 
+	<select id="getLastDailyInfoId" resultType="int">
+	SELECT MAX(DAILYINFOID) FROM PSTM_DAILYINFO
+	</select>
+	
+ 
+  <insert id="insert" parameterType="DailyinfoDto">
+  	INSERT INTO PSTM_DAILYINFO
+  	VALUES(DAILYINFOIDSEQ.NEXTVAL,1, SYSDATE, '스쿼트', 150, 'ㅎㅎ')
+  </insert>
+  
+  <insert id="feedbackinsert" parameterType="DailyinfoDto">
+  	INSERT INTO PSTM_DAILYINFO
+  	VALUES(DAILYINFOIDSEQ.NEXTVAL, 1, SYSDATE, 'TEST',150,#{feedback})
+  </insert>
+  
+  <update id="update" parameterType="DailyinfoDto">
+  	UPDATE PSTM_DAILYINFO SET
+  	EXERCISE = #{exercise}, CONSUMEKCAL = #{consumekcal}, FEEDBACK = #{feedback}
+  </update>
+  
+  <delete id="delete" parameterType="DailyinfoDto">
+  	DELETE FROM PSTM_DAILYINFO WHERE DAILYINFOID = #{dailyinfoid}
+  </delete>
+  
+  
+  
+  
+</mapper>
